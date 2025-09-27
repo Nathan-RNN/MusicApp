@@ -3,8 +3,15 @@ import { Guitar } from "lucide-react";
 import PageContainer from "./PageContainer";
 import ProfileButton from "./ProfileButton";
 import ToggleTheme from "./theme/toggleTheme";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
+
+  if (pathname === "/auth/login" || pathname === "/auth/signup") {
+    return null;
+  }
+
   return (
     <header className="p-4 border-b-2">
       <PageContainer>

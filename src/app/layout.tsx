@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/general/theme/theme-provider";
 import Header from "@/components/general/Header";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +43,10 @@ export default function RootLayout({
         >
           <div className="flex flex-col min-h-screen">
             <Header />
-            <div className="flex-grow"> {children}</div>
+            <div className="flex-grow">
+              {children}
+              <Toaster richColors />
+            </div>
           </div>
         </ThemeProvider>
       </body>
