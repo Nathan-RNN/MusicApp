@@ -8,6 +8,11 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  USER
+  ADMIN
+}
 model User {
   id            String    @id
   name          String
@@ -18,6 +23,10 @@ model User {
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+
+  role          Role      @default(USER)
+
+  songs Song[]
 
   @@unique([email])
   @@map("user")
@@ -68,4 +77,129 @@ model Verification {
   @@map("verification")
 }
 
+enum Key {
+  C       
+  Csharp  
+  Db      
+  D
+  Dsharp
+  Eb
+  E
+  F
+  Fsharp
+  Gb
+  G
+  Gsharp
+  Ab
+  A
+  Asharp
+  Bb
+  B
 
+  Cm
+  Csharpm
+  Dbm
+  Dm
+  Dsharpm
+  Ebm
+  Em
+  Fm
+  Fsharpm
+  Gbm
+  Gm
+  Gsharpm
+  Abm
+  Am
+  Asharpm
+  Bbm
+  Bm
+  Unknown
+}
+
+model Artist {
+id String @id @default(cuid())
+name String @unique
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+
+
+songs Song[]
+}
+
+
+model Genre {
+id String @id @default(cuid())
+name String @unique
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+
+
+songs Song[]
+}
+
+
+model Tag {
+id String @id @default(cuid())
+name String @unique
+songTags  SongTag[]
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+}
+
+model Song {
+id String @id @default(cuid())
+title String
+subtitle String?
+
+userId String
+user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+
+artistId String?
+artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
+
+
+genreId String?
+genre Genre? @relation(fields: [genreId], references: [id], onDelete: SetNull)
+
+
+songTags SongTag[]
+
+key Key @default(Unknown)
+capo Int? 
+tempo Int? 
+timeSignature String? 
+
+youtubeUrl String? 
+thumbnailUrl String? 
+filePath String? 
+
+lyrics String? 
+chords String? 
+notes String? 
+
+
+recordingDate DateTime?
+
+playCount Int @default(0)
+favorite Boolean @default(false)
+
+
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+
+
+@@index([title])
+@@index([userId])
+@@index([artistId])
+}
+model SongTag {
+id String @id @default(cuid())
+song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+songId String
+tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+tagId String
+addedAt DateTime @default(now())
+
+@@unique([songId, tagId])
+}

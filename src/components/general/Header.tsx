@@ -1,9 +1,17 @@
 "use client";
-import { Guitar } from "lucide-react";
+import {
+  Guitar,
+  Home,
+  Music,
+  Music2,
+  PlusCircleIcon,
+  Star,
+} from "lucide-react";
 import PageContainer from "./PageContainer";
 import ProfileButton from "./ProfileButton";
 import ToggleTheme from "./theme/toggleTheme";
 import { usePathname } from "next/navigation";
+import { FloatingDock } from "../ui/floating-dock";
 
 export default function Header() {
   const pathname = usePathname();
@@ -11,6 +19,56 @@ export default function Header() {
   if (pathname === "/auth/login" || pathname === "/auth/signup") {
     return null;
   }
+
+  const links = () => {
+    switch (pathname) {
+      case "/dashboard":
+        return [
+          {
+            title: "Accueil",
+            icon: (
+              <Home className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+            ),
+            href: "/dashboard",
+          },
+
+          {
+            title: "Mes chansons",
+            icon: (
+              <Music className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+            ),
+            href: "/dashboard/my-songs",
+          },
+          {
+            title: "Favoris",
+            icon: (
+              <Star className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+            ),
+            href: "/dashboard/favorites",
+          },
+        ];
+      case "/songs":
+        return [
+          {
+            title: "Tous mes morceaux",
+            icon: (
+              <Music2 className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+            ),
+            href: "/songs",
+          },
+
+          {
+            title: "Ajouter un morceau",
+            icon: (
+              <PlusCircleIcon className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+            ),
+            href: "/songs/add",
+          },
+        ];
+      default:
+        return null;
+    }
+  };
 
   return (
     <header className="p-4 border-b-2">
@@ -24,6 +82,9 @@ export default function Header() {
               </span>
             </h1>
           </div>
+
+          <FloatingDock items={links() || []} />
+
           <div className="flex items-center gap-2">
             <ToggleTheme />
             <ProfileButton />

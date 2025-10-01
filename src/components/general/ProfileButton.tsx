@@ -9,13 +9,16 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Loader2, LogOut, User } from "lucide-react";
+import { Loader2, LogOut, User, User2 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { buttonVariants } from "../ui/button";
 
 export default function ProfileButton() {
+  const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   const handleLogout = async () => {
     await authClient.signOut({
@@ -29,8 +32,22 @@ export default function ProfileButton() {
     });
   };
 
-  if (!session) {
+  if (isPending) {
     return <Loader2 className="h-4 w-4 animate-spin" />;
+  }
+
+  if (!session) {
+    if (pathname === "/")
+      return (
+        <Link
+          href="/auth/login"
+          className={buttonVariants({ variant: "default" })}
+        >
+          <User2 />
+          Se connecter
+        </Link>
+      );
+    return null;
   }
 
   return (
@@ -52,7 +69,7 @@ export default function ProfileButton() {
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
           <User className="mr-2 h-4 w-4" />
           <span>Profil</span>
         </DropdownMenuItem>

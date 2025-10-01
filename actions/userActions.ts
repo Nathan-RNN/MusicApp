@@ -8,6 +8,7 @@ export const signIn = async (email: string, password: string) => {
       body: {
         email,
         password,
+        callbackURL: "/dashboard",
       },
     });
     return { success: true, message: "Connexion réussie" };

@@ -15,15 +15,17 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { signUp } from "../../actions/userActions";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nom invalide" }),
-  email: z.string().email("Adresse email invalide"),
+  email: z.email("Adresse email invalide"),
   password: z
+    .string()
+    .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" }),
+  confirmPassword: z
     .string()
     .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" }),
 });
@@ -31,7 +33,6 @@ const formSchema = z.object({
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { push, refresh } = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,11 +40,20 @@ export function SignUpForm() {
       name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
+
+    if (values.password !== values.confirmPassword) {
+      form.reset();
+      setLoading(false);
+      toast.error("Vérifiez que les mots de passe sont identiques");
+      return;
+    }
+
     const { success, message } = await signUp(
       values.name,
       values.email,
@@ -51,9 +61,9 @@ export function SignUpForm() {
     );
 
     if (success) {
-      push("/dashboard");
-      refresh();
+      form.reset();
       toast.success(message as string);
+      toast.info("Vérifiez votre email pour activer votre compte");
     } else {
       toast.error(message as string);
     }
@@ -70,7 +80,7 @@ export function SignUpForm() {
             vous connecter.
           </p>
         </div>
-        <div className="grid gap-6">
+        <div className="grid gap-2">
           <div className="grid gap-3">
             <FormField
               control={form.control}
@@ -133,6 +143,28 @@ export function SignUpForm() {
                           <Eye className="h-5 w-5 text-gray-500" />
                         )}
                       </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid gap-3">
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirmer votre mot de passe</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="password"
+                        placeholder="********"
+                        {...field}
+                        className="pr-10"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
